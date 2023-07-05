@@ -43,7 +43,7 @@ def get_rate_of_chage(a: float, b: float):
 
 db = Database()
 # db.bind(provider='postgres', user='postgres', password='111111', host='localhost', port=5432, database='mars')
-db.bind(provider='sqlite', filename='db.sqlite', create_db=True)
+db.bind(provider='sqlite', filename='::memory::', create_db=True)
 
 # order_file_path = r"http://192.168.1.14/order.xlsx"
 # user_file_path = r"http://192.168.1.14/user.xlsx"
