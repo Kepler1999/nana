@@ -5,13 +5,6 @@ Created on Fri Mar 09 09:57:34 2018
 @author: admin
 """
 
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Jan 22 16:38:38 2018
-
-@author: admin
-"""
-
 import copy
 # import copy
 import itertools
@@ -36,9 +29,7 @@ import pandas as pd
 
 
 from flask import Flask
-
 app = Flask('test')
-
 
 @app.route("/test/")
 def main():
@@ -543,7 +534,7 @@ def main():
 
     # jsonD = json.loads(request.body)
     #
-    path = r"D:\Repo\Piake\1121.json"
+    path = r"C:\Users\liang\Desktop\Repo\1121.json"
     # jsonD = json.loads(path)
     with open(path, encoding="utf-8") as f:
         jsonD = json.load(f)
@@ -553,11 +544,19 @@ def main():
         population_iteration_times = jsonD['Initialization_times']
     else:
         population_iteration_times = 15
+
+    print("population_iteration_times", population_iteration_times)
+
     if 'Evolution_times' in total_keys:
         mute_iteration_times = jsonD['Evolution_times']
     else:
         mute_iteration_times = 300
+
+    print("mute_iteration_times", mute_iteration_times)
+
     rigidIndex = jsonD['rigidIndex']
+    print("rigidIndex", rigidIndex)
+
     task_id = str(jsonD['taskId'])
     start_time = time.strftime('%Y_%m_%d_%H_%M_%S',
                                time.localtime(time.time()))
@@ -565,27 +564,44 @@ def main():
     #       task_id + ' , start_time: ' + start_time)
     # max_renshu=rigidIndex[0]['MaxRenshu']
     max_range = rigidIndex[1]['Pole']
+    print("max_range", max_range)
+
     soft_index = jsonD['softIndex']
+    print("soft_index", soft_index)
     # population_value=soft_index[0]['PopuValue']
     gender_value = soft_index[1]['GenderValue']
+    print("gender_value", gender_value)
+
     admin_value = soft_index[2]['AdminValue']
+    print("admin_value", admin_value)
+
     C = json_decode_c(jsonD['Class'])
+    print("C", C)
+
     number_class = C.shape[0]
     ClassID = []
     for i in range(number_class):
         ClassID.append(str(jsonD['Class'][i]['ClassID']))
     S = json_decode_s(jsonD['Student'])
+    print("ClassID", ClassID)
+    print("S", S)
+
     temp_class = pd.DataFrame(C)
     temp_class.columns = ['Course', 'Admin_Class', 'Group_ID']
     temp_class["ClassID"] = ClassID
+    print("temp_class", temp_class)
+
     student = pd.DataFrame(S)
     number_subject = S.shape[1] - 3
     colName = ['ID', 'Gender', 'Admin_Class']
     for i in range(number_subject):
         colName.append(str(i + 1))
     student.columns = colName
+    print("student", student)
 
     student_grade_fun = json_decode_score(jsonD['Student'])
+    print("student_grade_fun", student_grade_fun)
+
     student_grade_code = student_grade_fun['code']
     if student_grade_code:
         student_grade = student_grade_fun['result']
@@ -750,7 +766,7 @@ def main():
     bad_ids = []
     pole_grade = range_population(first_population['E_M'])[1]
     #
-    out_come ={}
+    out_come = {}
     print(warning_code)
     #
     if bad_index:
@@ -774,7 +790,6 @@ def main():
         out_come['Student_numbers_for_class'] = student_numbers_for_class
         out_come['taskId'] = task_id
 
-
         # out_come = {'HcCode': -1, 'WrongHc': wrong_alternative_options, 'Schedule': final_student_selection,
         #             'Bad_id': bad_ids, 'Student_numbers_for_class': student_numbers_for_class, 'taskId': task_id}
     end_time = time.strftime('%Y_%m_%d_%H_%M_%S', time.localtime(time.time()))
@@ -784,12 +799,16 @@ def main():
     #             task_id + '-' + start_time + '__' + end_time + '.json'
     # with open(file_name, "w", encoding="utf-8") as f:
     #     json.dump(out_come, f)
-        # loger('/outcome: task ' + task_id + ' ,result file is ok! start_time: ' +
-        #       start_time + ';end_time:' + end_time)
-        # loger('/outcome: ' + file_name)
+    # loger('/outcome: task ' + task_id + ' ,result file is ok! start_time: ' +
+    #       start_time + ';end_time:' + end_time)
+    # loger('/outcome: ' + file_name)
     # return HttpResponse(json.dumps(out_come), content_type='application/json')
     # return json.dumps(out_come)
+    #
+    print(*(f"{n} {v}" for n, v in globals().items()), sep=" \n ")
+    #
     return json.dumps(out_come)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
