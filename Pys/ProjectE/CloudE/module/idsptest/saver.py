@@ -52,13 +52,14 @@ class Page(db.Entity):
 # region school domain
 
 class IdspSchool(db.Entity):
-    id = PrimaryKey(int, auto=True)
     name = Required(str)
-    domain = Required(str)
+    domain = Optional(str)
     teacher_num = Optional(int)
     student_num = Optional(int)
     parent_num = Optional(int)
-
+    
+    pv = Optional(int)
+    uv = Optional(int)
 # endregion
 
 # region idspview models
@@ -73,7 +74,7 @@ class IdspView(db.Entity):
 # endregion 
 @func_exec_time
 @db_session
-def save_from_csv():
+def save_bddata_from_csv():
     import pandas as pd
     df = pd.read_csv(r"C:\Users\liang\Desktop\Repo\idsp_sitemap.csv")
     "模块 菜单 页面 Uri"
@@ -114,7 +115,32 @@ def save_from_csv():
             page = Page(name=pass_name,uri=uri,item=item)
             commit()
 
-
+@func_exec_time
+@db_session
+def save_schoolinfo_from_csv():
+    path = r"C:\Users\liang\Desktop\Repo\IDSP-BOSS 学校列表.xlsx"
+    import pandas as pd
+    df = pd.read_excel(path)
+    
+    for i in tqdm(df.index):
+        name = str(df.loc[i, "名称"])
+        domain = str(df.loc[i, "域名"])
+        teacher_num = str(df.loc[i, "教师人数"])
+        student_num = str(df.loc[i, "学生人数"])   
+        parenet_num = str(df.loc[i, "家长人数"])   
+        
+        if len(name)<1 or len(domain)<1 or IdspSchool.get(name=name):
+            continue
+        
+        school = IdspSchool(name=name)
+        school.domain = domain
+        school.teacher_num = teacher_num
+        school.student_num = student_num
+        school.parent_num = parenet_num
+    
+    
+    
 if __name__ == "__main__":
     db.generate_mapping(create_tables=True)
-    save_from_csv()
+    # save_bddata_from_csv()
+    save_schoolinfo_from_csv()

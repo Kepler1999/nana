@@ -1,4 +1,4 @@
-from saver import db, Modular,Item,Page,IdspView,func_exec_time
+from saver import db, Modular,Item,Page,IdspView,IdspSchool,func_exec_time
 from pony.orm import *
 from tqdm import tqdm
 
@@ -50,9 +50,22 @@ def statics():
     
     commit()
 
+@func_exec_time
+@db_session
+def statics_school():
+    school = IdspSchool.select()
+    for s in tqdm(school[:]):
         
+        pg_view = select(v for v in IdspView if s.domain in v.URL)
+        
+        pv = select(int(i.PV) for i in pg_view).sum()
+        uv = select(int(i.UV) for i in pg_view).sum()
+
+        s.pv = pv
+        s.uv = uv
+    
 
 if __name__ == '__main__':
     db.generate_mapping()
-    statics()
+    statics_school()
     
