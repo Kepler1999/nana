@@ -1,0 +1,11 @@
+{
+    "sqltools.useNodeRuntime": true,
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "database": "C:\\Users\\liang\\Desktop\\Repo\\common.sqlite",
+            "name": "test"
+        }
+    ]
+}
