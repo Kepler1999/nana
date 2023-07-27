@@ -63,5 +63,19 @@ def get_national_list():
     return ss
 
 
+def get_issue_code(platform:int=1):
+    import random
+    prefix = None
+    code = str(random.randint(1000,10000))
+    
+    if platform == 1: # 云平台
+        prefix = "IDSP"
+        return prefix + "-" + code
+    elif platform == 2: # 排课
+        prefix = "PK"
+        return prefix + "-" + code
+
+
 if __name__ == '__main__':
-    print(float2percentage(13.000000000))
+    # print(float2percentage(13.000000000))
+    print(get_issue_code(1))
