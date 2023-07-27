@@ -22,14 +22,14 @@ app.include_router(geography.router)
 
 
 @limiter.limit("1/second")
-@app.get('/test')
+@app.get("/test")
 def print_hi(request: Request):
     # Get server status for test
     return {"server": "ON"}  # Press Ctrl+F8 to toggle the breakpoint.
 
 
 # Press the green button in the gutter to run the script.
-if __name__ == '__main__':
+if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app="main:app", reload=True)

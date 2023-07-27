@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="ProjectRootManager" version="2" project-jdk-name="C:\Users\liang\miniconda3" project-jdk-type="Python SDK" />
+  <component name="Black">
+    <option name="enabledOnReformat" value="true" />
+    <option name="enabledOnSave" value="true" />
+    <option name="pathToExecutable" value="D:\Program\Conda\Scripts\black.exe" />
+    <option name="sdkUUID" value="a74b09ae-056f-4586-ad0b-65fb8e830573" />
+  </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="D:\Program\Conda" project-jdk-type="Python SDK" />
 </project>
