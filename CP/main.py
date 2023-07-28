@@ -15,10 +15,18 @@ limiter = Limiter(key_func=get_remote_address)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+
+from model import db
+
+
 # add blueprint
 from service.routers import geography
 
 app.include_router(geography.router)
+
+from service.routers.school import digital_asset
+
+app.include_router(digital_asset.router)
 
 
 @limiter.limit("1/second")

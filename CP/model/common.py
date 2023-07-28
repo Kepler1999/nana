@@ -6,20 +6,22 @@ from pony.orm import *
 # 国家、省/州、城市、区县、乡镇街道
 # 地址坐标
 
+
 class Country(db.Entity):
     # 执行标准：GB/T 2659-2000
-    __tablename__ = 'common_geography_country'
+    __tablename__ = "common_geography_country"
 
     # base country information structure in GB/T 2659-2000
     name_chs = Required(str, unique=True, index=True)
     name_eng = Optional(str)
     fullname_eng = Optional(str)
 
-    alphabet_code_2 = Required(str)
+    alphabet_code_2 = Optional(str)
     alphabet_code_3 = Optional(str)
 
     # you can extend in this
     # city = Set(lambda:City)
+
 
 # class Province(db.Entity):
 #     __tablename__ = 'common_geography_province'
@@ -80,3 +82,7 @@ class Country(db.Entity):
 #     altitude = Optional(str)
 
 # endregion
+
+
+if __name__ == "__main__":
+    db.generate_mapping(create_tables=True)

@@ -1,20 +1,18 @@
 from fastapi import APIRouter
+from pydantic import BaseModel
+from pony.orm import *
+from service.routers import db_session, Country
+
 
 router = APIRouter(
     prefix="/geography",
-    tags=["geography"],
+    tags=["common-geography"],
 )
 
-from model import db
-from model.common import Country
-from pony.orm import *
-
-db.generate_mapping(create_tables=True)
 
 # region Country service
 
 # Country pydantic model
-from pydantic import BaseModel
 
 
 class CountryModel(BaseModel):
@@ -35,22 +33,6 @@ class CountryModel(BaseModel):
     "country示例：name_chs:阿富汗, name_eng:Afghanistan, fullname_eng:the Islamic Republic of Afghanistan, alphabet_code_2:AF, alphabet_code_3:AFG",
 )
 async def get_all_country():
-    ret = {
-        "code": 404,
-        "msg": "没有查询到满足条件的结果",
-        "data": [],
-    }
-    # with db_session:
-    #     country = Country.select()
-    #     if country.count() > 0:
-    #         ret = ret = {
-    #             "code": 200,
-    #             "msg": f"{country.count()}条结果",
-    #             "data": [],
-    #         }
-    #         for c in country:
-    #             ret["data"].append(c.to_dict())
-
     with db_session:
         country = Country.select()
         ret = [c.to_dict() for c in country]
@@ -59,16 +41,16 @@ async def get_all_country():
 
 
 @router.get(
-    path="/country/{args}",
+    path="/country/",
     summary="查询国家或地区信息",
-    description="通过id或名称查询国家或地区信息，名称可以是中文或英文名称。批量查询多参数使用英文逗号,间隔",
+    description="通过id、中文名称、英文名称查询国家或地区信息。批量查询多参数使用英文逗号,间隔",
 )
 async def get_country_by_name_or_id(args: int | str = -1):
     ret = {"code": 404, "msg": "没有查询到满足条件的结果", "paras": str(args)}
 
     filter = []
 
-    with (db_session):
+    with db_session:
         args = str(args).replace("，", ",")
         args = args.strip().split(",")
 
@@ -92,29 +74,78 @@ async def get_country_by_name_or_id(args: int | str = -1):
 
 @router.post(
     path="/country/",
-    summary="添加或更新国家或地区信息",
-    description="添加国家或地区信息。不需要传入id值"
-    "格式：name_chs:阿富汗, name_eng:Afghanistan, fullname_eng:the Islamic Republic of Afghanistan, alphabet_code_2:AF, alphabet_code_3:AFG",
+    summary="添加国家或地区信息",
+    description="添加国家或地区信息，传入国家schema信息，id自动生成(不支持自定义）",
 )
 async def add_country(args: CountryModel):
-    ret = {"code": 403, "msg": "待添加的信息已存在", "paras": str(args)}
-    print(args)
+    if len(str(args.name_chs).strip()) <= 0:
+        return {"code": 401, "msg": "参数缺失:中文名称", "result": str(args)}
+
     with db_session:
         # 添加
-        country = Country(name_chs=args["name_chs"])
-        # if (
-        #     args.id is None
-        #     or select(c for c in Country if c.id == args.id).count() <= 0
-        # ):
-        #     country = Country(
-        #         name_chs=args.name_chs,
-        #         name_eng=args.name_eng,
-        #         fullname_eng=args.fullname_eng,
-        #         alphabet_code_2=args.alphabet_code_2,
-        #         alphabet_code_3=args.alphabet_code_3,
-        #     )
-
+        country = Country(
+            name_chs=args.name_chs,
+            name_eng=args.name_eng,
+            fullname_eng=args.fullname_eng,
+            alphabet_code_2=args.alphabet_code_2,
+            alphabet_code_3=args.alphabet_code_3,
+        )
+        # country = Country(*args)
         ret = {"code": 200, "msg": "已添加", "result": country.to_dict()}
         return ret
 
-        # 更新
+
+@router.put(
+    path="/country/",
+    summary="更新国家或地区信息",
+    description="更新国家或地区信息，传入国家schema信息，更新对应id的国家信息",
+)
+async def update_country(args: CountryModel):
+    if len(str(args.id).strip()) <= 0:
+        return {"code": 401, "msg": "参数缺失:id", "args": str(args)}
+
+    with db_session:
+        # 添加
+        country = Country.get(id=args.id)
+
+        if country is None:
+            return {"code": 404, "msg": "未查找到符合条件的结果", "args": str(args)}
+
+        if len(str(args.name_chs)) > 0:
+            country.name_chs = args.name_chs
+
+        if len(str(args.name_eng)) > 0:
+            country.name_eng = args.name_eng
+
+        if len(str(args.fullname_eng)) > 0:
+            country.fullname_eng = args.fullname_eng
+
+        if len(str(args.alphabet_code_2)) > 0:
+            country.alphabet_code_2 = args.alphabet_code_2
+
+        if len(str(args.alphabet_code_3)) > 0:
+            country.alphabet_code_3 = args.alphabet_code_3
+
+        ret = {"code": 200, "msg": "已更新", "result": country.to_dict()}
+
+    return ret
+
+
+@router.delete(
+    path="/country/",
+    summary="删除国家或地区信息",
+    description="传入id,删除对应id的国家信息",
+)
+async def del_country(args: int):
+    with db_session:
+        # 添加
+        country = Country.get(id=args.id)
+
+        if country is None:
+            return {"code": 404, "msg": "未查找到符合条件的结果", "args": str(args)}
+
+        country.delete()
+
+        ret = {"code": 200, "msg": "已更新", "result": country.to_dict()}
+
+    return ret

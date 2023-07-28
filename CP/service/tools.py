@@ -1,4 +1,9 @@
 import time
+import secrets
+
+
+def get_id(length: int = 16) -> str:
+    return str(secrets.token_hex(length))
 
 
 def func_exec_time(f):
@@ -6,7 +11,9 @@ def func_exec_time(f):
         s_time = time.time()
         res = f(*arg, **kwarg)
         e_time = time.time()
-        print(f'::Monitor:: "{f.__name__}" execute second(s)：{round(e_time - s_time, 4)}')
+        print(
+            f'::Monitor:: "{f.__name__}" execute second(s)：{round(e_time - s_time, 4)}'
+        )
         return res
 
     return inner
@@ -14,43 +21,43 @@ def func_exec_time(f):
 
 def float2percentage(f: float, decimalplace=2) -> str:
     t = str(f * 100)
-    if '.' not in t:
+    if "." not in t:
         return t + "%"
 
-    t = t.rstrip('0')
-    position = t.find('.')
-    if len(t[position + 1:]) == 0:
-        return t.rstrip('.') + "%"
-    elif len(t[position + 1:]) <= decimalplace:
-        return t.rstrip('0') + "%"
+    t = t.rstrip("0")
+    position = t.find(".")
+    if len(t[position + 1 :]) == 0:
+        return t.rstrip(".") + "%"
+    elif len(t[position + 1 :]) <= decimalplace:
+        return t.rstrip("0") + "%"
     else:
         return str(round(f * 100, decimalplace)) + "%"
 
 
 def your_float(f: float, decimalplace=2) -> str:
     t = str(f)
-    if '.' not in t:
+    if "." not in t:
         return t
 
-    t = t.rstrip('0')
-    position = t.find('.')
-    if len(t[position + 1:]) == 0:
-        return t.rstrip('.')
-    elif len(t[position + 1:]) <= decimalplace:
-        return t.rstrip('0')
+    t = t.rstrip("0")
+    position = t.find(".")
+    if len(t[position + 1 :]) == 0:
+        return t.rstrip(".")
+    elif len(t[position + 1 :]) <= decimalplace:
+        return t.rstrip("0")
     else:
         return str(round(f, decimalplace))
 
 
 def get_rate_of_chage(a: float, b: float):
     if b == 0:
-        return {"ret": "fail", "code": -1, 'msg': "对比值不接受0"}
+        return {"ret": "fail", "code": -1, "msg": "对比值不接受0"}
     return float2percentage((a - b) / b)
 
 
 def is_Chinese(word):
     for ch in word:
-        if '\u4e00' <= ch <= '\u9fff':
+        if "\u4e00" <= ch <= "\u9fff":
             return True
     return False
 
@@ -65,6 +72,7 @@ def get_national_list():
 
 def get_issue_code(platform: int = 1):
     import random
+
     prefix = None
     code = str(random.randint(1000, 10000))
 
@@ -76,6 +84,7 @@ def get_issue_code(platform: int = 1):
         return prefix + "-" + code
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # print(float2percentage(13.000000000))
-    print(get_issue_code(1))
+    a = get_id()
+    print(a, type(a), len(a))
