@@ -14,8 +14,8 @@ async def palce():
 # PROJ_DIR = "Pys\ProjectE\CloudE"
 # sys.path.append(os.path.join(PROJ_DIR, 'project'))
 
-# from server import db
-# from pony.orm import *
+from server import db
+from pony.orm import *
 
 # class Country(db.Entity):
 #     # 执行标准：GB/T 2659-2000
@@ -32,12 +32,12 @@ async def palce():
 #     # you can extend in this    
 #     # city = Set(lambda:City)
 
-# @router.get('/country/list')
-# async def country_list():
-#     ret = []
-#     with db_session:
-#         country = Country.select()
-#         for c in country[:]:
-#             ret.append(c.to_dict())
+@router.get('/country/list')
+async def country_list():
+    ret = []
+    with db_session:
+        country = Country.select()
+        for c in country[:]:
+            ret.append(c.to_dict())
     
-#     return ret
+    return ret
