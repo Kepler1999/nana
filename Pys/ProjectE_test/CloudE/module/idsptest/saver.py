@@ -4,7 +4,7 @@ from tqdm import tqdm
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from pony.orm import *
-from tools import func_exec_time
+
 
 db = Database() 
 db.bind(provider="sqlite", filename=r"C:\Users\liang\Desktop\Repo\idsp_opdata.sqlite",create_db=True)
@@ -47,6 +47,8 @@ class Page(db.Entity):
     rollout = Optional(int)
     contribute = Optional(int)
 
+
+
 # endregion
 
 # region school domain
@@ -72,7 +74,15 @@ class IdspView(db.Entity):
     Duration = Required(str)
     
 # endregion 
-@func_exec_time
+
+class SchoolPageView(db.Entity):
+    school_id = Optional(str)
+    page_id = Optional(int)
+
+    pv = Optional(int)
+    uv = Optional(int)
+
+
 @db_session
 def save_bddata_from_csv():
     import pandas as pd
@@ -115,7 +125,6 @@ def save_bddata_from_csv():
             page = Page(name=pass_name,uri=uri,item=item)
             commit()
 
-@func_exec_time
 @db_session
 def save_schoolinfo_from_csv():
     path = r"C:\Users\liang\Desktop\Repo\IDSP-BOSS 学校列表.xlsx"

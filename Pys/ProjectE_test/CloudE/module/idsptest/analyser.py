@@ -1,9 +1,9 @@
-from saver import db, Modular,Item,Page,IdspView,IdspSchool,func_exec_time
+from saver import db, Modular,Item,Page,IdspView,IdspSchool
 from pony.orm import *
 from tqdm import tqdm
 
 # page view check
-@func_exec_time
+
 @db_session
 def statics():
     
@@ -50,7 +50,7 @@ def statics():
     
     commit()
 
-@func_exec_time
+
 @db_session
 def statics_school():
     school = IdspSchool.select()
@@ -67,5 +67,6 @@ def statics_school():
 
 if __name__ == '__main__':
     db.generate_mapping()
+    statics()
     statics_school()
     
